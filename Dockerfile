@@ -1,11 +1,12 @@
 # Use Maven to build the JAR inside the container
-FROM maven:3.9.6-eclipse-temurin-21 AS builder
+FROM eclipse-temurin:21 AS builder
 WORKDIR /app
 COPY . .
+RUN chmod +x mvnw  # Add this line to make mvnw executable
 RUN ./mvnw clean package -DskipTests
 
-# Use JDK 21 for running the app
+# Use a smaller JDK image for running the app
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
 COPY --from=builder /app/target/Employee-management-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar"]
